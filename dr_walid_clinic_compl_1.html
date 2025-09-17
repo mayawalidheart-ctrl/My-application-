@@ -1,0 +1,3009 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>عيادة د. وليد الشاذلي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #e0f2fe;
+            --accent-color: #0ea5e9;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        }
+        
+        .medical-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+        
+        .light-blue-theme {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+        
+        .chat-bubble-user {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+            border-radius: 18px 18px 4px 18px;
+        }
+        
+        .chat-bubble-staff {
+            background: #e5e7eb;
+            color: #374151;
+            margin-right: auto;
+            border-radius: 18px 18px 18px 4px;
+        }
+        
+        .time-slot {
+            transition: all 0.3s ease;
+            background: #e0f2fe;
+            border: 2px solid #3b82f6;
+            cursor: pointer;
+        }
+        
+        .time-slot:hover:not(.booked):not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .time-slot.selected {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .time-slot.disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-color: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        .time-slot.booked {
+            background: #fef2f2 !important;
+            color: #dc2626 !important;
+            border-color: #dc2626 !important;
+            cursor: not-allowed !important;
+            position: relative;
+        }
+        
+        .time-slot.booked:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            background: #fef2f2 !important;
+            color: #dc2626 !important;
+        }
+        
+        .time-slot.booked::before {
+            content: '✕';
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        .online-time-slot {
+            background: #dcfce7;
+            border: 2px solid #16a34a;
+        }
+        
+        .online-time-slot:hover {
+            background: #16a34a;
+            color: white;
+        }
+        
+        .online-time-slot.selected {
+            background: #16a34a;
+            color: white;
+        }
+        
+        .reminder-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .doctor-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #3b82f6;
+            object-fit: cover;
+        }
+
+        .admin-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #3b82f6;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #16a34a;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #dc2626;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .validation-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #dc2626;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px 0;
+            font-size: 14px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #dc2626 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        .input-success {
+            border-color: #16a34a !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        .payment-option {
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            background: #e0f2fe;
+            transform: translateY(-2px);
+        }
+
+        .payment-option.selected {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .payment-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .blocked-day {
+            background: #fef2f2 !important;
+            color: #991b1b !important;
+            border-color: #dc2626 !important;
+            cursor: not-allowed !important;
+        }
+
+        .patient-question {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+
+        .admin-response {
+            background: #e0f2fe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0 8px 20px;
+        }
+
+        /* Hidden admin sections */
+        .admin-only {
+            display: none !important;
+        }
+
+        /* Admin mode styles */
+        .admin-mode .admin-only {
+            display: block !important;
+        }
+
+        .admin-mode .admin-dropdown {
+            display: flex !important;
+        }
+
+        .admin-dropdown {
+            display: none !important;
+        }
+
+        /* Secret admin access indicator */
+        .admin-access-hint {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 10px;
+            color: #ccc;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        /* Password change modal */
+        .password-change-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .password-change-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Appointment table styles */
+        .appointment-table {
+            overflow-x: auto;
+        }
+
+        .appointment-row {
+            transition: all 0.3s ease;
+        }
+
+        .appointment-row:hover {
+            background: #f8fafc;
+        }
+
+        .status-confirmed {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .status-cancelled {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* WhatsApp confirmation modal */
+        .whatsapp-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .whatsapp-modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .whatsapp-icon {
+            color: #25D366;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Booked slot indicator */
+        .booked-indicator {
+            background: #dc2626;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+
+        /* Admin tabs */
+        .admin-tab {
+            display: none;
+        }
+
+        .admin-tab.active {
+            display: block;
+        }
+
+        .tab.tab-active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- WhatsApp Confirmation Modal -->
+    <div id="whatsappModal" class="whatsapp-modal hidden">
+        <div class="whatsapp-modal-content">
+            <i class="fab fa-whatsapp whatsapp-icon"></i>
+            <h3 class="text-2xl font-bold text-center mb-4 text-green-800">تم تسجيل طلب الحجز بنجاح!</h3>
+            <div class="text-center mb-6">
+                <p class="text-lg mb-2 text-blue-800 font-semibold">سيتم تأكيد الحجز عبر الواتساب قبل الموعد</p>
+                <p class="text-sm text-gray-600 mb-4">رقم الواتساب: <span class="font-bold text-green-600">+201281847125</span></p>
+                <div id="appointmentDetails" class="bg-blue-50 p-4 rounded-lg border border-blue-300 mb-4">
+                    <!-- Appointment details will be inserted here -->
+                </div>
+                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-300 mb-4">
+                    <p class="text-sm text-yellow-800 font-semibold">
+                        <i class="fas fa-exclamation-triangle ml-2"></i>
+                        يرجى انتظار رسالة التأكيد عبر الواتساب قبل الحضور للعيادة
+                    </p>
+                </div>
+                <p class="text-sm text-red-600 font-semibold" id="paymentReminder">
+                    <!-- Payment reminder will be inserted here -->
+                </p>
+            </div>
+            <button onclick="closeWhatsAppModal()" class="btn text-white" style="background: #25D366; border-color: #25D366;">
+                <i class="fab fa-whatsapp ml-2"></i>
+                فهمت، شكراً
+            </button>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="passwordChangeModal" class="password-change-modal hidden">
+        <div class="password-change-content">
+            <h3 class="text-2xl font-bold text-center mb-6 text-blue-800">تغيير كلمة المرور</h3>
+            <div id="passwordChangeMessage"></div>
+            
+            <form id="passwordChangeForm">
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text font-semibold text-blue-800">كلمة المرور الحالية</span>
+                    </label>
+                    <input type="password" class="input input-bordered border-blue-300 focus:border-blue-500" id="currentPassword" required>
+                </div>
+                
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text font-semibold text-blue-800">كلمة المرور الجديدة</span>
+                    </label>
+                    <input type="password" class="input input-bordered border-blue-300 focus:border-blue-500" id="newPassword" required minlength="6">
+                    <label class="label">
+                        <span class="label-text-alt text-gray-500">يجب أن تكون 6 أحرف على الأقل</span>
+                    </label>
+                </div>
+                
+                <div class="form-control mb-6">
+                    <label class="label">
+                        <span class="label-text font-semibold text-blue-800">تأكيد كلمة المرور الجديدة</span>
+                    </label>
+                    <input type="password" class="input input-bordered border-blue-300 focus:border-blue-500" id="confirmPassword" required>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button type="submit" class="btn flex-1 text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ كلمة المرور الجديدة
+                    </button>
+                    <button type="button" onclick="closePasswordChangeModal()" class="btn btn-outline flex-1" id="cancelPasswordChange">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div id="genericModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-xl font-bold text-blue-800"></h3>
+                <button onclick="closeGenericModal()" class="btn btn-sm btn-circle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modalBody">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Notification -->
+    <div id="reminderNotification" class="reminder-notification hidden">
+        <div class="alert alert-info shadow-lg">
+            <div>
+                <i class="fas fa-bell"></i>
+                <div>
+                    <h3 class="font-bold">تذكير بالموعد</h3>
+                    <div class="text-sm" id="reminderText"></div>
+                </div>
+            </div>
+            <div class="flex-none">
+                <button class="btn btn-sm" onclick="dismissReminder()">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar bg-white shadow-lg sticky top-0 z-50" style="border-bottom: 3px solid #3b82f6;">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                    <i class="fas fa-bars text-xl text-blue-600"></i>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a onclick="showSection('home')" class="nav-link"><i class="fas fa-home ml-2 text-blue-600"></i>الرئيسية</a></li>
+                    <li><a onclick="showSection('booking')" class="nav-link"><i class="fas fa-calendar-alt ml-2 text-blue-600"></i>حجز موعد</a></li>
+                    <li><a onclick="showSection('online-booking')" class="nav-link"><i class="fas fa-video ml-2 text-blue-600"></i>حجز أونلاين</a></li>
+                    <li><a onclick="showSection('chat')" class="nav-link"><i class="fas fa-comments ml-2 text-blue-600"></i>المحادثة</a></li>
+                    <li><a onclick="showSection('knowledge')" class="nav-link"><i class="fas fa-book-medical ml-2 text-blue-600"></i>المعرفة الطبية</a></li>
+                    <li><a onclick="showSection('location')" class="nav-link"><i class="fas fa-map-marker-alt ml-2 text-blue-600"></i>الموقع</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost text-xl font-bold" style="color: #3b82f6;" onclick="showSection('home')">
+                <i class="fas fa-stethoscope ml-2"></i>
+                <span id="clinicNameNav">عيادة د. وليد الشاذلي</span>
+            </a>
+        </div>
+        
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a onclick="showSection('home')" class="nav-link hover:bg-blue-50"><i class="fas fa-home ml-2 text-blue-600"></i>الرئيسية</a></li>
+                <li><a onclick="showSection('booking')" class="nav-link hover:bg-blue-50"><i class="fas fa-calendar-alt ml-2 text-blue-600"></i>حجز موعد</a></li>
+                <li><a onclick="showSection('online-booking')" class="nav-link hover:bg-blue-50"><i class="fas fa-video ml-2 text-blue-600"></i>حجز أونلاين</a></li>
+                <li><a onclick="showSection('chat')" class="nav-link hover:bg-blue-50"><i class="fas fa-comments ml-2 text-blue-600"></i>المحادثة</a></li>
+                <li><a onclick="showSection('knowledge')" class="nav-link hover:bg-blue-50"><i class="fas fa-book-medical ml-2 text-blue-600"></i>المعرفة الطبية</a></li>
+                <li><a onclick="showSection('location')" class="nav-link hover:bg-blue-50"><i class="fas fa-map-marker-alt ml-2 text-blue-600"></i>الموقع</a></li>
+            </ul>
+        </div>
+        
+        <div class="navbar-end">
+            <!-- Admin dropdown - hidden by default -->
+            <div class="dropdown dropdown-end admin-dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost">
+                    <i class="fas fa-user-circle text-xl text-blue-600"></i>
+                    <span id="currentUserDisplay" class="ml-2">المدير</span>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a onclick="showSection('admin')" class="admin-only"><i class="fas fa-shield-alt ml-2 text-blue-600"></i>لوحة الإدارة</a></li>
+                    <li><a onclick="showPasswordChangeModal()" class="admin-only"><i class="fas fa-key ml-2 text-green-600"></i>تغيير كلمة المرور</a></li>
+                    <li><a onclick="logout()" class="admin-only"><i class="fas fa-sign-out-alt ml-2 text-red-600"></i>تسجيل الخروج</a></li>
+                </ul>
+            </div>
+            
+            <!-- Public contact info -->
+            <div class="hidden lg:flex items-center text-sm text-blue-600 mr-4">
+                <i class="fas fa-phone ml-2"></i>
+                <span>034810537</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <div id="home" class="section">
+        <!-- Hero Section -->
+        <div class="hero min-h-screen gradient-bg">
+            <div class="hero-content text-center text-white">
+                <div class="max-w-2xl">
+                    <!-- Doctor Photo - Embedded directly -->
+                    <div class="mb-6 flex justify-center">
+                        <div class="doctor-photo bg-white flex items-center justify-center">
+                            <i class="fas fa-user-md text-6xl text-blue-600"></i>
+                        </div>
+                    </div>
+                    
+                    <h1 class="text-4xl font-bold mb-3" id="clinicNameHome">
+                        عيادة د. وليد الشاذلي
+                    </h1>
+                    <p class="text-xl mb-8" id="clinicSlogan">
+                        أستاذ جراحة الشرج والقولون بكلية الطب جامعة الإسكندرية
+                    </p>
+                    
+                    <!-- Main Action Buttons -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <button onclick="showSection('booking')" class="btn btn-lg bg-white text-blue-600 hover:bg-blue-50 border-2 border-white">
+                            <i class="fas fa-calendar-plus ml-2"></i>
+                            حجز موعد بالعيادة
+                        </button>
+                        <button onclick="showSection('online-booking')" class="btn btn-lg btn-outline btn-white hover:bg-white hover:text-blue-600">
+                            <i class="fas fa-video ml-2"></i>
+                            استشارة أونلاين
+                        </button>
+                        <button onclick="showSection('chat')" class="btn btn-lg btn-outline btn-white hover:bg-white hover:text-blue-600">
+                            <i class="fas fa-comments ml-2"></i>
+                            محادثة مباشرة
+                        </button>
+                        <button onclick="showSection('location')" class="btn btn-lg btn-outline btn-white hover:bg-white hover:text-blue-600">
+                            <i class="fas fa-map-marker-alt ml-2"></i>
+                            موقع العيادة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinic Hours Banner -->
+        <div class="text-white p-6 text-center" style="background: #3b82f6;">
+            <div class="container mx-auto">
+                <h3 class="text-lg font-semibold mb-2">ساعات العمل</h3>
+                <p id="clinicHours">السبت - الأحد - الاثنين - الأربعاء: 2:00 ظ - 5:00 ع</p>
+                <div class="mt-2" id="specialOffer">
+                    <span>للحجز والاستفسار: 034810537 - 034812434</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Overview -->
+        <div class="container mx-auto py-16 px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-800">خدماتنا المتخصصة</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card bg-white shadow-xl border-t-4 border-blue-500">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-md text-4xl text-blue-600 mb-4"></i>
+                        <h3 class="card-title justify-center text-blue-800">حجز كشف</h3>
+                        <p>كشف شامل للقولون والمستقيم والشرج</p>
+                        <div class="mt-4">
+                            <span class="text-lg font-bold text-blue-600" id="examinationFee">400 جنيه</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-white shadow-xl border-t-4 border-blue-500">
+                    <div class="card-body text-center">
+                        <i class="fas fa-comments-dollar text-4xl text-blue-600 mb-4"></i>
+                        <h3 class="card-title justify-center text-blue-800">استشارة طبية</h3>
+                        <p>استشارة متخصصة في جراحة الشرج والقولون</p>
+                        <div class="mt-4">
+                            <span class="text-lg font-bold text-blue-600" id="consultationFee">100 جنيه</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-white shadow-xl border-t-4 border-green-500">
+                    <div class="card-body text-center">
+                        <i class="fas fa-video text-4xl text-green-600 mb-4"></i>
+                        <h3 class="card-title justify-center text-green-800">استشارة أونلاين</h3>
+                        <p>مكالمة فيديو 15 دقيقة مع الطبيب</p>
+                        <div class="mt-4">
+                            <span class="text-lg font-bold text-green-600" id="onlineConsultationFee">800 جنيه</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regular Booking Section -->
+    <div id="booking" class="section hidden">
+        <div class="container mx-auto py-8 px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-800">حجز موعد بالعيادة</h2>
+            
+            <div class="max-w-2xl mx-auto">
+                <div class="card bg-white shadow-xl border-t-4 border-blue-500">
+                    <div class="card-body">
+                        <form id="bookingForm">
+                            <!-- Service Type -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">نوع الخدمة</span>
+                                </label>
+                                <select class="select select-bordered border-blue-300 focus:border-blue-500" id="serviceType" required>
+                                    <option disabled selected>اختر نوع الخدمة</option>
+                                    <option value="examination">حجز كشف - <span id="examFeeOption">400</span> جنيه</option>
+                                    <option value="consultation">استشارة طبية - <span id="consultFeeOption">100</span> جنيه</option>
+                                </select>
+                            </div>
+
+                            <!-- Patient Name -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">اسم المريض رباعي <span class="text-red-600">*</span></span>
+                                    <span class="label-text-alt text-gray-500">مثال: أحمد محمد علي حسن</span>
+                                </label>
+                                <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="patientName" 
+                                       placeholder="الاسم الأول الثاني الثالث الرابع" required 
+                                       oninput="validateFullName(this)" onblur="validateFullName(this)">
+                                <div id="nameError" class="validation-error">
+                                    يجب إدخال الاسم رباعي (4 أسماء) مفصولة بمسافات
+                                </div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">رقم الهاتف (11 رقم) <span class="text-red-600">*</span></span>
+                                    <span class="label-text-alt text-gray-500">مثال: 01234567890</span>
+                                </label>
+                                <input type="tel" class="input input-bordered border-blue-300 focus:border-blue-500" id="patientPhone" 
+                                       placeholder="01xxxxxxxxx" required maxlength="11" 
+                                       oninput="validatePhoneNumber(this)" onblur="validatePhoneNumber(this)">
+                                <div id="phoneError" class="validation-error">
+                                    يجب إدخال رقم هاتف صحيح مكون من 11 رقم ويبدأ بـ 01
+                                </div>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">التاريخ</span>
+                                </label>
+                                <input type="date" class="input input-bordered border-blue-300 focus:border-blue-500" id="appointmentDate" required onchange="loadAvailableTimes()">
+                            </div>
+
+                            <!-- Time -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">الوقت المتاح</span>
+                                </label>
+                                <div class="mb-2">
+                                    <div class="flex items-center gap-4 text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-blue-100 border-2 border-blue-500 rounded"></div>
+                                            <span>متاح</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-red-100 border-2 border-red-500 rounded"></div>
+                                            <span class="text-red-600">محجوز</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="timeSlots" class="grid grid-cols-3 gap-2">
+                                    <!-- Time slots will be loaded dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Selected Time Display -->
+                            <div class="form-control mb-4" id="selectedTimeDisplay" style="display: none;">
+                                <div class="alert alert-info bg-blue-50 border-blue-300">
+                                    <i class="fas fa-clock text-blue-600"></i>
+                                    <span>الوقت المحدد: <span id="selectedTimeText" class="font-bold"></span></span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-blue-800">طريقة الدفع</span>
+                                </label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="payment-option" onclick="selectPaymentMethod('cash', this)">
+                                        <div class="text-center">
+                                            <i class="fas fa-money-bill-wave text-3xl text-blue-600 mb-2"></i>
+                                            <p class="font-semibold">نقدي في العيادة</p>
+                                        </div>
+                                    </div>
+                                    <div class="payment-option" onclick="selectPaymentMethod('instapay', this)">
+                                        <div class="text-center">
+                                            <i class="fas fa-mobile-alt text-3xl text-blue-600 mb-2"></i>
+                                            <p class="font-semibold">إنستاباي</p>
+                                            <p class="text-sm">01223483268</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-block text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                <i class="fas fa-calendar-check ml-2"></i>
+                                تأكيد الحجز
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Online Booking Section -->
+    <div id="online-booking" class="section hidden">
+        <div class="container mx-auto py-8 px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-green-800">حجز استشارة أونلاين</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- Available Online Slots -->
+                <div class="card bg-white shadow-xl border-t-4 border-green-500 mb-6">
+                    <div class="card-body">
+                        <h3 class="card-title text-green-800">المواعيد المتاحة للاستشارة الأونلاين</h3>
+                        <div class="alert alert-info bg-green-50 border-green-300 mb-4">
+                            <i class="fas fa-info-circle text-green-600"></i>
+                            <div>
+                                <p>مواعيد الاستشارة الأونلاين منفصلة عن مواعيد العيادة</p>
+                                <p>مدة الاستشارة: 15 دقيقة</p>
+                                <p class="font-bold text-red-600">الدفع: إنستاباي فقط - 01223483268</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4" id="onlineTimeSlots">
+                            <!-- Online time slots will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Booking Form -->
+                <div class="card bg-white shadow-xl border-t-4 border-green-500" id="onlineBookingForm" style="display: none;">
+                    <div class="card-body">
+                        <h3 class="card-title text-green-800">تأكيد حجز الاستشارة الأونلاين</h3>
+                        
+                        <form id="onlineBookingFormSubmit">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-green-800">اسم المريض رباعي <span class="text-red-600">*</span></span>
+                                        <span class="label-text-alt text-gray-500">مثال: أحمد محمد علي حسن</span>
+                                    </label>
+                                    <input type="text" class="input input-bordered border-green-300 focus:border-green-500" id="onlinePatientName" 
+                                           placeholder="الاسم الأول الثاني الثالث الرابع" required 
+                                           oninput="validateFullName(this)" onblur="validateFullName(this)">
+                                    <div id="onlineNameError" class="validation-error">
+                                        يجب إدخال الاسم رباعي (4 أسماء) مفصولة بمسافات
+                                    </div>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-green-800">رقم الهاتف (11 رقم) <span class="text-red-600">*</span></span>
+                                        <span class="label-text-alt text-gray-500">مثال: 01234567890</span>
+                                    </label>
+                                    <input type="tel" class="input input-bordered border-green-300 focus:border-green-500" id="onlinePatientPhone" 
+                                           placeholder="01xxxxxxxxx" required maxlength="11" 
+                                           oninput="validatePhoneNumber(this)" onblur="validatePhoneNumber(this)">
+                                    <div id="onlinePhoneError" class="validation-error">
+                                        يجب إدخال رقم هاتف صحيح مكون من 11 رقم ويبدأ بـ 01
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-control mt-4">
+                                <div class="alert alert-success bg-green-50 border-green-300">
+                                    <i class="fas fa-video text-green-600"></i>
+                                    <span>الموعد المحدد: <span id="selectedOnlineSlot" class="font-bold"></span></span>
+                                </div>
+                            </div>
+
+                            <div class="form-control mt-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-green-800">سبب الاستشارة</span>
+                                </label>
+                                <textarea class="textarea textarea-bordered border-green-300 focus:border-green-500" rows="3" id="onlineConsultationReason" required></textarea>
+                            </div>
+
+                            <!-- Payment Method for Online - Instapay Only -->
+                            <div class="form-control mt-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold text-green-800">طريقة الدفع</span>
+                                </label>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="payment-option selected" onclick="selectOnlinePaymentMethod('instapay', this)">
+                                        <div class="text-center">
+                                            <i class="fas fa-mobile-alt text-3xl text-green-600 mb-2"></i>
+                                            <p class="font-semibold">إنستاباي (مطلوب)</p>
+                                            <p class="text-sm font-bold">01223483268</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button type="submit" class="btn btn-block text-white" style="background: #16a34a; border-color: #16a34a;">
+                                    <i class="fas fa-calendar-check ml-2"></i>
+                                    تأكيد حجز الاستشارة الأونلاين - 800 جنيه
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div id="chat" class="section hidden">
+        <div class="container mx-auto py-8 px-4 h-screen flex flex-col">
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-800">المحادثة مع العيادة</h2>
+            
+            <div class="flex-1 max-w-4xl mx-auto w-full">
+                <div class="card bg-white shadow-xl h-full flex flex-col border-t-4 border-blue-500">
+                    <!-- Chat Header -->
+                    <div class="text-white p-4 rounded-t-2xl" style="background: #3b82f6;">
+                        <div class="flex items-center">
+                            <div class="avatar online">
+                                <div class="w-10 rounded-full">
+                                    <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=face" alt="Staff">
+                                </div>
+                            </div>
+                            <div class="mr-3">
+                                <h3 class="font-semibold">فريق عيادة د. وليد الشاذلي</h3>
+                                <p class="text-sm opacity-75">متصل الآن</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-blue-50">
+                        <div class="space-y-4" id="messagesContainer">
+                            <div class="chat-bubble-staff p-3 max-w-xs">
+                                <p>مرحباً بك في عيادة د. وليد الشاذلي المتخصصة في جراحة الشرج والقولون. كيف يمكنني مساعدتك؟</p>
+                                <span class="text-xs opacity-60">10:30 AM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="p-4 border-t">
+                        <div class="flex gap-2">
+                            <input type="text" id="chatInput" class="input input-bordered flex-1 border-blue-300 focus:border-blue-500" placeholder="اكتب رسالتك هنا...">
+                            <button onclick="sendMessage()" class="btn text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Section -->
+    <div id="location" class="section hidden">
+        <div class="container mx-auto py-8 px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-800">موقع العيادة</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="card bg-white shadow-xl border-t-4 border-blue-500">
+                    <div class="card-body">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-blue-800">معلومات العيادة</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-map-marker-alt text-blue-600 text-xl ml-4"></i>
+                                        <div>
+                                            <p class="font-semibold" id="locationAddress">13 شارع مصطفى حافظ متفرع من شارع كلية الطب، محطة الرمل، الإسكندرية</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-phone text-blue-600 text-xl ml-4"></i>
+                                        <div>
+                                            <p class="font-semibold" id="locationPhone">034810537 - 034812434</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-whatsapp text-green-600 text-xl ml-4"></i>
+                                        <div>
+                                            <p class="font-semibold">+201281847125</p>
+                                            <p class="text-sm text-gray-600">للحجز عبر الواتساب</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock text-blue-600 text-xl ml-4"></i>
+                                        <div>
+                                            <p class="font-semibold" id="locationHours">السبت - الأحد - الاثنين - الأربعاء: 2:00 ظ - 5:00 ع</p>
+                                            <p class="text-sm text-gray-600">(مغلق: الثلاثاء - الخميس - الجمعة)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <button onclick="shareLocation()" class="btn btn-block text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                        <i class="fas fa-share-alt ml-2"></i>
+                                        مشاركة الموقع
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Map -->
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-blue-800">الخريطة</h3>
+                                <div class="map-container">
+                                    <iframe 
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3411.234567890123!2d29.9!3d31.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDEyJzAwLjAiTiAyOcKwNTQnMDAuMCJF!5e0!3m2!1sen!2seg!4v1234567890"
+                                        width="100%" 
+                                        height="300" 
+                                        style="border:0;" 
+                                        allowfullscreen="" 
+                                        loading="lazy">
+                                    </iframe>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button onclick="getDirections()" class="btn btn-outline btn-block" style="border-color: #3b82f6; color: #3b82f6;">
+                                        <i class="fas fa-directions ml-2"></i>
+                                        الحصول على الاتجاهات
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Knowledge Section -->
+    <div id="knowledge" class="section hidden">
+        <div class="container mx-auto py-8 px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-800">المعرفة الطبية - جراحة الشرج والقولون</h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="knowledgeArticles">
+                <!-- Medical articles will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Admin Panel Section -->
+    <div id="admin" class="section hidden admin-only">
+        <div class="container mx-auto py-8 px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-blue-800">نظام الإدارة المتقدم</h2>
+            
+            <!-- Admin Login -->
+            <div id="adminLogin" class="max-w-md mx-auto">
+                <div class="card bg-white shadow-xl border-t-4 border-blue-500">
+                    <div class="card-body">
+                        <h3 class="text-xl font-semibold text-center mb-6 text-blue-800">تسجيل دخول الإدارة</h3>
+                        <div id="adminLoginMessage"></div>
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text text-blue-800">اسم المستخدم</span>
+                            </label>
+                            <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="adminUsername" placeholder="admin">
+                        </div>
+                        <div class="form-control mb-6">
+                            <label class="label">
+                                <span class="label-text text-blue-800">كلمة المرور</span>
+                            </label>
+                            <input type="password" class="input input-bordered border-blue-300 focus:border-blue-500" id="adminPassword" placeholder="admin123">
+                        </div>
+                        <button onclick="adminLogin()" class="btn btn-block text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                            تسجيل الدخول
+                        </button>
+                        
+                        <div class="text-center mt-4 text-sm text-gray-600">
+                            <p>المستخدمون المتاحون:</p>
+                            <p>admin, manager1, manager2, manager3, manager4, manager5, manager6</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="hidden">
+                <!-- Welcome Message -->
+                <div class="alert alert-success mb-6 bg-green-50 border-green-300">
+                    <i class="fas fa-user-check text-green-600"></i>
+                    <div>
+                        <span>مرحباً </span>
+                        <span id="welcomeUser" class="font-bold"></span>
+                    </div>
+                </div>
+
+                <!-- Admin Navigation Tabs -->
+                <div class="tabs tabs-boxed justify-center mb-8 flex-wrap bg-blue-50">
+                    <a class="tab tab-active" onclick="showAdminTab('dashboard')" style="color: #3b82f6;">
+                        <i class="fas fa-chart-bar ml-2"></i>
+                        لوحة المعلومات
+                    </a>
+                    <a class="tab" onclick="showAdminTab('appointments')" style="color: #3b82f6;">
+                        <i class="fas fa-calendar-check ml-2"></i>
+                        إدارة الحجوزات
+                    </a>
+                    <a class="tab" onclick="showAdminTab('clinic-info')" style="color: #3b82f6;">
+                        <i class="fas fa-hospital ml-2"></i>
+                        معلومات العيادة
+                    </a>
+                    <a class="tab" onclick="showAdminTab('schedule')" style="color: #3b82f6;">
+                        <i class="fas fa-calendar-alt ml-2"></i>
+                        إدارة المواعيد
+                    </a>
+                    <a class="tab" onclick="showAdminTab('online-schedule')" style="color: #16a34a;">
+                        <i class="fas fa-video ml-2"></i>
+                        مواعيد الاستشارات الأونلاين
+                    </a>
+                    <a class="tab" onclick="showAdminTab('medical-content')" style="color: #3b82f6;">
+                        <i class="fas fa-book-medical ml-2"></i>
+                        المحتوى الطبي
+                    </a>
+                    <a class="tab" onclick="showAdminTab('patient-questions')" style="color: #3b82f6;">
+                        <i class="fas fa-question-circle ml-2"></i>
+                        أسئلة المرضى
+                    </a>
+                    <a class="tab" onclick="showAdminTab('fees')" style="color: #3b82f6;">
+                        <i class="fas fa-dollar-sign ml-2"></i>
+                        إدارة الرسوم
+                    </a>
+                    <a class="tab" onclick="showAdminTab('password-management')" style="color: #16a34a;">
+                        <i class="fas fa-key ml-2"></i>
+                        إدارة كلمات المرور
+                    </a>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboardTab" class="admin-tab active">
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat bg-white shadow rounded-lg border-t-4 border-blue-500">
+                            <div class="stat-figure text-blue-600">
+                                <i class="fas fa-calendar-alt text-3xl"></i>
+                            </div>
+                            <div class="stat-title">المواعيد اليوم</div>
+                            <div class="stat-value text-blue-600" id="todayAppointments">0</div>
+                        </div>
+                        <div class="stat bg-white shadow rounded-lg border-t-4 border-green-500">
+                            <div class="stat-figure text-green-600">
+                                <i class="fas fa-video text-3xl"></i>
+                            </div>
+                            <div class="stat-title">الاستشارات الأونلاين</div>
+                            <div class="stat-value text-green-600" id="onlineConsultations">0</div>
+                        </div>
+                        <div class="stat bg-white shadow rounded-lg border-t-4 border-yellow-500">
+                            <div class="stat-figure text-yellow-600">
+                                <i class="fas fa-users text-3xl"></i>
+                            </div>
+                            <div class="stat-title">إجمالي المرضى</div>
+                            <div class="stat-value text-yellow-600" id="totalPatients">0</div>
+                        </div>
+                        <div class="stat bg-white shadow rounded-lg border-t-4 border-purple-500">
+                            <div class="stat-figure text-purple-600">
+                                <i class="fas fa-pound-sign text-3xl"></i>
+                            </div>
+                            <div class="stat-title">الإيرادات المتوقعة</div>
+                            <div class="stat-value text-purple-600" id="expectedRevenue">0 جنيه</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Management Tab -->
+                <div id="appointmentsTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة الحجوزات</h3>
+                            <div id="appointmentsMessage"></div>
+                            
+                            <!-- Filter Options -->
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-blue-800">فلترة بالتاريخ</span>
+                                    </label>
+                                    <input type="date" id="filterDate" class="input input-bordered border-blue-300 focus:border-blue-500" onchange="filterAppointments()">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-blue-800">فلترة بالحالة</span>
+                                    </label>
+                                    <select id="filterStatus" class="select select-bordered border-blue-300 focus:border-blue-500" onchange="filterAppointments()">
+                                        <option value="">جميع الحالات</option>
+                                        <option value="confirmed">مؤكد</option>
+                                        <option value="cancelled">ملغي</option>
+                                        <option value="pending">في الانتظار</option>
+                                    </select>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-blue-800">فلترة بنوع الخدمة</span>
+                                    </label>
+                                    <select id="filterService" class="select select-bordered border-blue-300 focus:border-blue-500" onchange="filterAppointments()">
+                                        <option value="">جميع الخدمات</option>
+                                        <option value="examination">حجز كشف</option>
+                                        <option value="consultation">استشارة طبية</option>
+                                        <option value="online">استشارة أونلاين</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Appointments Table -->
+                            <div class="appointment-table">
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                            <tr class="bg-blue-100">
+                                                <th class="text-blue-800">اسم المريض</th>
+                                                <th class="text-blue-800">رقم الهاتف</th>
+                                                <th class="text-blue-800">التاريخ</th>
+                                                <th class="text-blue-800">الوقت</th>
+                                                <th class="text-blue-800">نوع الخدمة</th>
+                                                <th class="text-blue-800">طريقة الدفع</th>
+                                                <th class="text-blue-800">الحالة</th>
+                                                <th class="text-blue-800">الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="appointmentsTableBody">
+                                            <!-- Appointments will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- No appointments message -->
+                            <div id="noAppointmentsMessage" class="text-center p-8 hidden">
+                                <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-600">لا توجد حجوزات حالياً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinic Info Tab -->
+                <div id="clinic-infoTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة معلومات العيادة</h3>
+                            <div id="clinicInfoMessage"></div>
+                            
+                            <form id="clinicInfoForm">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">اسم العيادة</span>
+                                        </label>
+                                        <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="clinicName" required>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">الشعار</span>
+                                        </label>
+                                        <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="clinicSlogan" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-control mt-4">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-blue-800">العنوان</span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered border-blue-300 focus:border-blue-500" id="clinicAddress" rows="2" required></textarea>
+                                </div>
+                                
+                                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">أرقام الهاتف</span>
+                                        </label>
+                                        <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="clinicPhone" required>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">رقم الواتساب</span>
+                                        </label>
+                                        <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="clinicWhatsapp" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-control mt-4">
+                                    <label class="label">
+                                        <span class="label-text font-semibold text-blue-800">ساعات العمل</span>
+                                    </label>
+                                    <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="clinicHours" required>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <button type="submit" class="btn text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                        <i class="fas fa-save ml-2"></i>
+                                        حفظ التغييرات
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Tab -->
+                <div id="scheduleTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة مواعيد العيادة</h3>
+                            <div id="scheduleMessage"></div>
+                            
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Time Slots Management -->
+                                <div>
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-4">إدارة الأوقات المتاحة</h4>
+                                    <div class="form-control mb-4">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">إضافة وقت جديد</span>
+                                        </label>
+                                        <div class="flex gap-2">
+                                            <input type="time" class="input input-bordered border-blue-300 focus:border-blue-500 flex-1" id="newTimeSlot">
+                                            <button onclick="addTimeSlot()" class="btn text-white" style="background: #16a34a; border-color: #16a34a;">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-2" id="timeSlotsList">
+                                        <!-- Time slots will be loaded here -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Blocked Dates Management -->
+                                <div>
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-4">إدارة التواريخ المحجوبة</h4>
+                                    <div class="form-control mb-4">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">إضافة تاريخ محجوب</span>
+                                        </label>
+                                        <div class="flex gap-2">
+                                            <input type="date" class="input input-bordered border-blue-300 focus:border-blue-500 flex-1" id="newBlockedDate">
+                                            <button onclick="addBlockedDate()" class="btn text-white" style="background: #dc2626; border-color: #dc2626;">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-2" id="blockedDatesList">
+                                        <!-- Blocked dates will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Schedule Tab -->
+                <div id="online-scheduleTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-green-800">إدارة مواعيد الاستشارات الأونلاين</h3>
+                            <div id="onlineScheduleMessage"></div>
+                            
+                            <!-- Add New Online Slot -->
+                            <div class="card bg-green-50 border border-green-300 mb-6">
+                                <div class="card-body">
+                                    <h4 class="text-lg font-semibold text-green-800 mb-4">إضافة موعد أونلاين جديد</h4>
+                                    <form id="addOnlineSlotForm">
+                                        <div class="grid md:grid-cols-3 gap-4">
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text font-semibold text-green-800">التاريخ</span>
+                                                </label>
+                                                <input type="date" class="input input-bordered border-green-300 focus:border-green-500" id="onlineSlotDate" required>
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text font-semibold text-green-800">الوقت</span>
+                                                </label>
+                                                <input type="time" class="input input-bordered border-green-300 focus:border-green-500" id="onlineSlotTime" required>
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text font-semibold text-green-800">المدة (دقيقة)</span>
+                                                </label>
+                                                <input type="number" class="input input-bordered border-green-300 focus:border-green-500" id="onlineSlotDuration" value="15" min="5" max="60" required>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <button type="submit" class="btn text-white" style="background: #16a34a; border-color: #16a34a;">
+                                                <i class="fas fa-plus ml-2"></i>
+                                                إضافة موعد أونلاين
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Online Slots List -->
+                            <div class="overflow-x-auto">
+                                <table class="table table-zebra w-full">
+                                    <thead>
+                                        <tr class="bg-green-100">
+                                            <th class="text-green-800">التاريخ</th>
+                                            <th class="text-green-800">الوقت</th>
+                                            <th class="text-green-800">المدة</th>
+                                            <th class="text-green-800">الحالة</th>
+                                            <th class="text-green-800">المريض</th>
+                                            <th class="text-green-800">الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="onlineSlotsTableBody">
+                                        <!-- Online slots will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Content Tab -->
+                <div id="medical-contentTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة المحتوى الطبي</h3>
+                            <div id="medicalContentMessage"></div>
+                            
+                            <!-- Add New Article -->
+                            <div class="card bg-blue-50 border border-blue-300 mb-6">
+                                <div class="card-body">
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-4">إضافة مقال طبي جديد</h4>
+                                    <form id="addArticleForm">
+                                        <div class="form-control mb-4">
+                                            <label class="label">
+                                                <span class="label-text font-semibold text-blue-800">عنوان المقال</span>
+                                            </label>
+                                            <input type="text" class="input input-bordered border-blue-300 focus:border-blue-500" id="articleTitle" required>
+                                        </div>
+                                        <div class="form-control mb-4">
+                                            <label class="label">
+                                                <span class="label-text font-semibold text-blue-800">محتوى المقال</span>
+                                            </label>
+                                            <textarea class="textarea textarea-bordered border-blue-300 focus:border-blue-500" id="articleContent" rows="4" required></textarea>
+                                        </div>
+                                        <div class="form-control mb-4">
+                                            <label class="label">
+                                                <span class="label-text font-semibold text-blue-800">رابط الصورة</span>
+                                            </label>
+                                            <input type="url" class="input input-bordered border-blue-300 focus:border-blue-500" id="articleImage" placeholder="https://example.com/image.jpg">
+                                        </div>
+                                        <button type="submit" class="btn text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                            <i class="fas fa-plus ml-2"></i>
+                                            إضافة المقال
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Articles List -->
+                            <div class="grid md:grid-cols-2 gap-4" id="articlesManagementList">
+                                <!-- Articles will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Questions Tab -->
+                <div id="patient-questionsTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة أسئلة المرضى</h3>
+                            <div id="patientQuestionsMessage"></div>
+                            
+                            <div class="space-y-4" id="patientQuestionsList">
+                                <!-- Patient questions will be loaded here -->
+                            </div>
+                            
+                            <div id="noQuestionsMessage" class="text-center p-8 hidden">
+                                <i class="fas fa-question-circle text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-600">لا توجد أسئلة من المرضى حالياً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fees Tab -->
+                <div id="feesTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-blue-800">إدارة الرسوم</h3>
+                            <div id="feesMessage"></div>
+                            
+                            <form id="feesForm">
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">رسوم حجز الكشف (جنيه)</span>
+                                        </label>
+                                        <input type="number" class="input input-bordered border-blue-300 focus:border-blue-500" id="examinationFeeInput" min="0" required>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-blue-800">رسوم الاستشارة الطبية (جنيه)</span>
+                                        </label>
+                                        <input type="number" class="input input-bordered border-blue-300 focus:border-blue-500" id="consultationFeeInput" min="0" required>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-green-800">رسوم الاستشارة الأونلاين (جنيه)</span>
+                                        </label>
+                                        <input type="number" class="input input-bordered border-green-300 focus:border-green-500" id="onlineConsultationFeeInput" min="0" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <button type="submit" class="btn text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                        <i class="fas fa-save ml-2"></i>
+                                        حفظ الرسوم
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Management Tab -->
+                <div id="password-managementTab" class="admin-tab">
+                    <div class="card admin-card shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title text-green-800">إدارة كلمات المرور</h3>
+                            <div id="passwordManagementMessage"></div>
+                            
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Change Own Password -->
+                                <div class="card bg-green-50 border border-green-300">
+                                    <div class="card-body">
+                                        <h4 class="text-lg font-semibold text-green-800 mb-4">تغيير كلمة المرور الخاصة بك</h4>
+                                        <button onclick="showPasswordChangeModal()" class="btn text-white" style="background: #16a34a; border-color: #16a34a;">
+                                            <i class="fas fa-key ml-2"></i>
+                                            تغيير كلمة المرور
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Manage Other Users (Admin Only) -->
+                                <div class="card bg-blue-50 border border-blue-300" id="userManagementCard">
+                                    <div class="card-body">
+                                        <h4 class="text-lg font-semibold text-blue-800 mb-4">إدارة المستخدمين</h4>
+                                        <div class="space-y-2" id="usersList">
+                                            <!-- Users list will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secret admin access hint -->
+    <div class="admin-access-hint">
+        Admin: Ctrl+Shift+A
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let selectedTime = null;
+        let selectedOnlineTime = null;
+        let currentUser = null;
+        let selectedPaymentMethod = null;
+        let selectedOnlinePaymentMethod = 'instapay';
+        let adminMode = false;
+        let forcePasswordChange = false;
+        
+        // Working days (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const workingDays = [0, 1, 3, 6]; // Sunday, Monday, Wednesday, Saturday
+        const blockedDays = [2, 4, 5]; // Tuesday, Thursday, Friday
+        
+        // Data storage with localStorage persistence
+        let clinicData = {
+            timeSlots: ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'],
+            blockedDates: [],
+            appointments: [],
+            onlineSlots: [
+                { id: 1, date: '2024-01-20', time: '10:00', duration: 15, available: true },
+                { id: 2, date: '2024-01-20', time: '19:00', duration: 15, available: true },
+                { id: 3, date: '2024-01-21', time: '20:00', duration: 15, available: true }
+            ],
+            fees: {
+                examination: 400,
+                consultation: 100,
+                onlineConsultation: 800
+            },
+            clinicInfo: {
+                name: 'عيادة د. وليد الشاذلي',
+                slogan: 'أستاذ جراحة الشرج والقولون بكلية الطب جامعة الإسكندرية',
+                phone: '034810537 - 034812434',
+                whatsapp: '+201281847125',
+                address: '13 شارع مصطفى حافظ متفرع من شارع كلية الطب، محطة الرمل، الإسكندرية',
+                workingHours: 'السبت - الأحد - الاثنين - الأربعاء: 2:00 ظ - 5:00 ع'
+            },
+            users: [
+                { username: 'admin', password: 'admin123', fullName: 'المدير الرئيسي', isAdmin: true, passwordChanged: false },
+                { username: 'manager1', password: 'pass123', fullName: 'مدير 1', isAdmin: true, passwordChanged: false },
+                { username: 'manager2', password: 'pass123', fullName: 'مدير 2', isAdmin: true, passwordChanged: false },
+                { username: 'manager3', password: 'pass123', fullName: 'مدير 3', isAdmin: true, passwordChanged: false },
+                { username: 'manager4', password: 'pass123', fullName: 'مدير 4', isAdmin: true, passwordChanged: false },
+                { username: 'manager5', password: 'pass123', fullName: 'مدير 5', isAdmin: true, passwordChanged: false },
+                { username: 'manager6', password: 'pass123', fullName: 'مدير 6', isAdmin: true, passwordChanged: false }
+            ],
+            medicalArticles: [
+                {
+                    id: 1,
+                    title: 'جراحة البواسير بالليزر',
+                    content: 'تقنية متطورة لعلاج البواسير باستخدام الليزر مع تقليل الألم وسرعة الشفاء. هذه التقنية تتميز بالدقة العالية وقلة المضاعفات.',
+                    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop'
+                },
+                {
+                    id: 2,
+                    title: 'علاج الشرخ الشرجي',
+                    content: 'طرق علاج الشرخ الشرجي الحديثة بدون جراحة وبالجراحة المتقدمة. نصائح للوقاية والعلاج المبكر.',
+                    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=250&fit=crop'
+                },
+                {
+                    id: 3,
+                    title: 'جراحة أورام القولون والمستقيم',
+                    content: 'أحدث التقنيات في جراحة أورام القولون والمستقيم مع الحفاظ على وظائف الأمعاء والتعافي السريع.',
+                    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=250&fit=crop'
+                }
+            ],
+            patientQuestions: [],
+            chatMessages: []
+        };
+
+        // Validation Functions
+        function validateFullName(input) {
+            const name = input.value.trim();
+            const names = name.split(/\s+/).filter(n => n.length > 0);
+            const isValid = names.length === 4 && names.every(n => /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s]+$/.test(n));
+            
+            const errorId = input.id === 'onlinePatientName' ? 'onlineNameError' : 'nameError';
+            const errorElement = document.getElementById(errorId);
+            
+            if (name === '') {
+                input.classList.remove('input-error', 'input-success');
+                errorElement.style.display = 'none';
+                return false;
+            }
+            
+            if (isValid) {
+                input.classList.remove('input-error');
+                input.classList.add('input-success');
+                errorElement.style.display = 'none';
+                return true;
+            } else {
+                input.classList.remove('input-success');
+                input.classList.add('input-error');
+                errorElement.style.display = 'block';
+                return false;
+            }
+        }
+
+        function validatePhoneNumber(input) {
+            const phone = input.value.trim();
+            const isValid = /^01[0-9]{9}$/.test(phone);
+            
+            const errorId = input.id === 'onlinePatientPhone' ? 'onlinePhoneError' : 'phoneError';
+            const errorElement = document.getElementById(errorId);
+            
+            if (phone === '') {
+                input.classList.remove('input-error', 'input-success');
+                errorElement.style.display = 'none';
+                return false;
+            }
+            
+            if (isValid) {
+                input.classList.remove('input-error');
+                input.classList.add('input-success');
+                errorElement.style.display = 'none';
+                return true;
+            } else {
+                input.classList.remove('input-success');
+                input.classList.add('input-error');
+                errorElement.style.display = 'block';
+                return false;
+            }
+        }
+
+        // WhatsApp Modal Functions
+        function showWhatsAppModal(appointmentData) {
+            const modal = document.getElementById('whatsappModal');
+            const detailsContainer = document.getElementById('appointmentDetails');
+            const paymentReminder = document.getElementById('paymentReminder');
+            
+            const serviceTypeText = {
+                'examination': 'حجز كشف',
+                'consultation': 'استشارة طبية',
+                'online': 'استشارة أونلاين'
+            };
+            
+            const paymentMethodText = {
+                'cash': 'نقدي في العيادة',
+                'instapay': 'إنستاباي'
+            };
+            
+            detailsContainer.innerHTML = `
+                <div class="text-right">
+                    <p><strong>اسم المريض:</strong> ${appointmentData.patientName}</p>
+                    <p><strong>نوع الخدمة:</strong> ${serviceTypeText[appointmentData.serviceType]}</p>
+                    <p><strong>التاريخ:</strong> ${appointmentData.date}</p>
+                    <p><strong>الوقت:</strong> ${appointmentData.time}</p>
+                    <p><strong>طريقة الدفع:</strong> ${paymentMethodText[appointmentData.paymentMethod]}</p>
+                </div>
+            `;
+            
+            if (appointmentData.paymentMethod === 'instapay') {
+                paymentReminder.textContent = 'يرجى الدفع عبر إنستاباي على الرقم: 01223483268';
+            } else {
+                paymentReminder.textContent = 'الدفع نقدي في العيادة';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeWhatsAppModal() {
+            document.getElementById('whatsappModal').classList.add('hidden');
+        }
+
+        // Generic Modal Functions
+        function showGenericModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('genericModal').classList.remove('hidden');
+        }
+
+        function closeGenericModal() {
+            document.getElementById('genericModal').classList.add('hidden');
+        }
+
+        // Secret admin access
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                toggleAdminMode();
+            }
+        });
+
+        function toggleAdminMode() {
+            adminMode = !adminMode;
+            if (adminMode) {
+                document.body.classList.add('admin-mode');
+                showSection('admin');
+            } else {
+                document.body.classList.remove('admin-mode');
+                logout();
+                showSection('home');
+            }
+        }
+
+        // Load data from localStorage
+        function loadFromStorage() {
+            const stored = localStorage.getItem('clinicData');
+            if (stored) {
+                const parsedData = JSON.parse(stored);
+                clinicData = { ...clinicData, ...parsedData };
+                
+                clinicData.users.forEach(user => {
+                    if (user.passwordChanged === undefined) {
+                        user.passwordChanged = false;
+                    }
+                });
+
+                if (!clinicData.appointments) {
+                    clinicData.appointments = [];
+                }
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('clinicData', JSON.stringify(clinicData));
+        }
+
+        function isTimeSlotBooked(date, time) {
+            return clinicData.appointments.some(appointment => 
+                appointment.date === date && 
+                appointment.time === time && 
+                appointment.status !== 'cancelled'
+            );
+        }
+
+        function generateAppointmentId() {
+            return 'APT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function isWorkingDay(dateString) {
+            const date = new Date(dateString);
+            const dayOfWeek = date.getDay();
+            return workingDays.includes(dayOfWeek);
+        }
+
+        function isBlockedDay(dateString) {
+            const date = new Date(dateString);
+            const dayOfWeek = date.getDay();
+            return blockedDays.includes(dayOfWeek) || clinicData.blockedDates.includes(dateString);
+        }
+        
+        function showSection(sectionId) {
+            if (sectionId === 'admin' && !adminMode) {
+                return;
+            }
+            
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            if (sectionId === 'knowledge') {
+                loadMedicalKnowledge();
+            } else if (sectionId === 'online-booking') {
+                loadOnlineTimeSlots();
+            } else if (sectionId === 'chat') {
+                loadChatMessages();
+            }
+        }
+
+        function selectPaymentMethod(method, element) {
+            document.querySelectorAll('#booking .payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedPaymentMethod = method;
+        }
+
+        function selectOnlinePaymentMethod(method, element) {
+            selectedOnlinePaymentMethod = 'instapay';
+        }
+
+        function loadAvailableTimes() {
+            const selectedDate = document.getElementById('appointmentDate').value;
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            
+            if (!selectedDate) return;
+            
+            timeSlotsContainer.innerHTML = '';
+            
+            if (isBlockedDay(selectedDate)) {
+                timeSlotsContainer.innerHTML = `
+                    <div class="col-span-3 text-center p-4 bg-red-100 border border-red-300 rounded-lg">
+                        <span>هذا التاريخ غير متاح للحجز - العيادة مغلقة</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!isWorkingDay(selectedDate)) {
+                timeSlotsContainer.innerHTML = `
+                    <div class="col-span-3 text-center p-4 bg-red-100 border border-red-300 rounded-lg">
+                        <span>العيادة مغلقة في هذا اليوم - أيام العمل: السبت، الأحد، الاثنين، الأربعاء</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            clinicData.timeSlots.forEach(time => {
+                const timeButton = document.createElement('button');
+                timeButton.type = 'button';
+                timeButton.className = 'btn time-slot relative';
+                
+                if (isTimeSlotBooked(selectedDate, time)) {
+                    timeButton.className += ' booked';
+                    timeButton.textContent = time;
+                    timeButton.disabled = true;
+                    timeButton.style.pointerEvents = 'none';
+                    
+                    const bookedIndicator = document.createElement('span');
+                    bookedIndicator.className = 'booked-indicator';
+                    bookedIndicator.textContent = 'محجوز';
+                    timeButton.appendChild(bookedIndicator);
+                } else {
+                    timeButton.textContent = time;
+                    timeButton.onclick = () => selectTime(time, timeButton);
+                }
+                
+                timeSlotsContainer.appendChild(timeButton);
+            });
+        }
+
+        function selectTime(time, button) {
+            if (button.classList.contains('booked')) {
+                return;
+            }
+            
+            document.querySelectorAll('.time-slot:not(.booked)').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            button.classList.add('selected');
+            selectedTime = time;
+            
+            document.getElementById('selectedTimeDisplay').style.display = 'block';
+            document.getElementById('selectedTimeText').textContent = time;
+        }
+
+        function loadOnlineTimeSlots() {
+            const container = document.getElementById('onlineTimeSlots');
+            container.innerHTML = '';
+            
+            const availableSlots = clinicData.onlineSlots.filter(slot => slot.available);
+            
+            if (availableSlots.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center p-8">
+                        <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">لا توجد مواعيد متاحة حالياً للاستشارة الأونلاين</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            availableSlots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'card bg-base-100 shadow cursor-pointer hover:shadow-lg transition-shadow border-2 border-green-300 hover:border-green-500';
+                slotDiv.onclick = () => selectOnlineSlot(slot);
+                slotDiv.innerHTML = `
+                    <div class="card-body p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-green-800">${slot.date}</p>
+                                <p class="text-sm text-gray-600">${slot.time}</p>
+                                <p class="text-sm text-green-600">مدة الاستشارة: ${slot.duration} دقيقة</p>
+                            </div>
+                            <div class="badge badge-success">متاح</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(slotDiv);
+            });
+        }
+
+        function selectOnlineSlot(slot) {
+            selectedOnlineTime = slot;
+            document.getElementById('selectedOnlineSlot').textContent = 
+                `${slot.date} - ${slot.time} (${slot.duration} دقيقة)`;
+            document.getElementById('onlineBookingForm').style.display = 'block';
+        }
+
+        function loadMedicalKnowledge() {
+            const container = document.getElementById('knowledgeArticles');
+            container.innerHTML = '';
+            
+            clinicData.medicalArticles.forEach(article => {
+                const articleDiv = document.createElement('div');
+                articleDiv.className = 'card bg-white shadow-xl border-t-4 border-blue-500';
+                articleDiv.innerHTML = `
+                    <figure>
+                        <img src="${article.image}" alt="${article.title}" class="w-full h-48 object-cover">
+                    </figure>
+                    <div class="card-body">
+                        <h3 class="card-title text-blue-800">${article.title}</h3>
+                        <p>${article.content}</p>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-sm text-white" style="background: #3b82f6; border-color: #3b82f6;">
+                                اقرأ المزيد
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(articleDiv);
+            });
+        }
+
+        function loadChatMessages() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            
+            const defaultMessage = document.createElement('div');
+            defaultMessage.className = 'chat-bubble-staff p-3 max-w-xs';
+            defaultMessage.innerHTML = `
+                <p>مرحباً بك في عيادة د. وليد الشاذلي المتخصصة في جراحة الشرج والقولون. كيف يمكنني مساعدتك؟</p>
+                <span class="text-xs opacity-60">10:30 AM</span>
+            `;
+            container.appendChild(defaultMessage);
+            
+            clinicData.chatMessages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = msg.type === 'user' ? 'chat-bubble-user p-3 max-w-xs' : 'chat-bubble-staff p-3 max-w-xs';
+                messageDiv.innerHTML = `
+                    <p>${msg.message}</p>
+                    <span class="text-xs opacity-60">${msg.timestamp}</span>
+                `;
+                container.appendChild(messageDiv);
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const timestamp = new Date().toLocaleTimeString();
+                
+                const userMessage = {
+                    type: 'user',
+                    message: message,
+                    timestamp: timestamp
+                };
+                clinicData.chatMessages.push(userMessage);
+                
+                const questionId = Date.now();
+                clinicData.patientQuestions.push({
+                    id: questionId,
+                    patientName: 'مريض من المحادثة',
+                    question: message,
+                    timestamp: new Date().toLocaleString('ar-EG'),
+                    response: null,
+                    respondedBy: null
+                });
+                
+                const chatMessages = document.getElementById('messagesContainer');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-bubble-user p-3 max-w-xs';
+                messageDiv.innerHTML = `
+                    <p>${message}</p>
+                    <span class="text-xs opacity-60">${timestamp}</span>
+                `;
+                chatMessages.appendChild(messageDiv);
+                input.value = '';
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                setTimeout(() => {
+                    const autoResponse = 'شكراً لك على رسالتك. سيقوم أحد المختصين بالرد عليك قريباً.';
+                    const responseMessage = {
+                        type: 'staff',
+                        message: autoResponse,
+                        timestamp: new Date().toLocaleTimeString()
+                    };
+                    clinicData.chatMessages.push(responseMessage);
+                    
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'chat-bubble-staff p-3 max-w-xs';
+                    responseDiv.innerHTML = `
+                        <p>${autoResponse}</p>
+                        <span class="text-xs opacity-60">${responseMessage.timestamp}</span>
+                    `;
+                    chatMessages.appendChild(responseDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    saveToStorage();
+                }, 2000);
+            }
+        }
+
+        function shareLocation() {
+            const locationText = `${clinicData.clinicInfo.name}\n${clinicData.clinicInfo.address}\nالهاتف: ${clinicData.clinicInfo.phone}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: clinicData.clinicInfo.name,
+                    text: locationText
+                });
+            } else {
+                navigator.clipboard.writeText(locationText).then(() => {
+                    alert('تم نسخ معلومات الموقع');
+                });
+            }
+        }
+
+        function getDirections() {
+            const url = 'https://www.google.com/maps/search/' + encodeURIComponent(clinicData.clinicInfo.address);
+            window.open(url, '_blank');
+        }
+
+        function dismissReminder() {
+            document.getElementById('reminderNotification').classList.add('hidden');
+        }
+
+        // Admin Functions
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const messageDiv = document.getElementById('adminLoginMessage');
+            
+            const user = clinicData.users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                document.getElementById('welcomeUser').textContent = user.fullName;
+                document.getElementById('currentUserDisplay').textContent = user.fullName;
+                
+                // Check if password change is required
+                if (!user.passwordChanged && username !== 'admin') {
+                    forcePasswordChange = true;
+                    showPasswordChangeModal();
+                }
+                
+                loadAdminDashboard();
+                messageDiv.innerHTML = '';
+            } else {
+                messageDiv.innerHTML = '<div class="error-message">اسم المستخدم أو كلمة المرور غير صحيحة</div>';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            adminMode = false;
+            forcePasswordChange = false;
+            document.body.classList.remove('admin-mode');
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            showSection('home');
+        }
+
+        function showPasswordChangeModal() {
+            document.getElementById('passwordChangeModal').classList.remove('hidden');
+        }
+
+        function closePasswordChangeModal() {
+            if (!forcePasswordChange) {
+                document.getElementById('passwordChangeModal').classList.add('hidden');
+            }
+        }
+
+        function showAdminTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('tab-active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.add('tab-active');
+            
+            // Load tab-specific content
+            switch(tabName) {
+                case 'dashboard':
+                    loadDashboardStats();
+                    break;
+                case 'appointments':
+                    loadAppointmentsTable();
+                    break;
+                case 'clinic-info':
+                    loadClinicInfoForm();
+                    break;
+                case 'schedule':
+                    loadScheduleManagement();
+                    break;
+                case 'online-schedule':
+                    loadOnlineScheduleManagement();
+                    break;
+                case 'medical-content':
+                    loadMedicalContentManagement();
+                    break;
+                case 'patient-questions':
+                    loadPatientQuestions();
+                    break;
+                case 'fees':
+                    loadFeesForm();
+                    break;
+                case 'password-management':
+                    loadPasswordManagement();
+                    break;
+            }
+        }
+
+        function loadAdminDashboard() {
+            loadDashboardStats();
+            loadAppointmentsTable();
+            loadClinicInfoForm();
+            loadScheduleManagement();
+            loadOnlineScheduleManagement();
+            loadMedicalContentManagement();
+            loadPatientQuestions();
+            loadFeesForm();
+            loadPasswordManagement();
+        }
+
+        function loadDashboardStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppointments = clinicData.appointments.filter(apt => apt.date === today && apt.status !== 'cancelled').length;
+            const onlineConsultations = clinicData.appointments.filter(apt => apt.serviceType === 'online' && apt.status !== 'cancelled').length;
+            const totalPatients = new Set(clinicData.appointments.map(apt => apt.patientPhone)).size;
+            
+            let expectedRevenue = 0;
+            clinicData.appointments.forEach(apt => {
+                if (apt.status !== 'cancelled') {
+                    switch(apt.serviceType) {
+                        case 'examination':
+                            expectedRevenue += clinicData.fees.examination;
+                            break;
+                        case 'consultation':
+                            expectedRevenue += clinicData.fees.consultation;
+                            break;
+                        case 'online':
+                            expectedRevenue += clinicData.fees.onlineConsultation;
+                            break;
+                    }
+                }
+            });
+            
+            document.getElementById('todayAppointments').textContent = todayAppointments;
+            document.getElementById('onlineConsultations').textContent = onlineConsultations;
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('expectedRevenue').textContent = expectedRevenue.toLocaleString();
+        }
+
+        function loadAppointmentsTable() {
+            const tbody = document.getElementById('appointmentsTableBody');
+            const noAppointmentsMsg = document.getElementById('noAppointmentsMessage');
+            
+            if (clinicData.appointments.length === 0) {
+                tbody.innerHTML = '';
+                noAppointmentsMsg.classList.remove('hidden');
+                return;
+            }
+            
+            noAppointmentsMsg.classList.add('hidden');
+            
+            const serviceTypeText = {
+                'examination': 'حجز كشف',
+                'consultation': 'استشارة طبية',
+                'online': 'استشارة أونلاين'
+            };
+            
+            const paymentMethodText = {
+                'cash': 'نقدي',
+                'instapay': 'إنستاباي'
+            };
+            
+            tbody.innerHTML = clinicData.appointments.map(apt => `
+                <tr class="appointment-row">
+                    <td class="font-semibold">${apt.patientName}</td>
+                    <td>${apt.patientPhone}</td>
+                    <td>${apt.date}</td>
+                    <td>${apt.time}</td>
+                    <td>${serviceTypeText[apt.serviceType]}</td>
+                    <td>${paymentMethodText[apt.paymentMethod]}</td>
+                    <td><span class="status-${apt.status}">${apt.status === 'confirmed' ? 'مؤكد' : apt.status === 'cancelled' ? 'ملغي' : 'في الانتظار'}</span></td>
+                    <td>
+                        <div class="flex gap-2">
+                            ${apt.status !== 'cancelled' ? `
+                                <button onclick="cancelAppointment('${apt.id}')" class="btn btn-sm btn-error">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteAppointment('${apt.id}')" class="btn btn-sm btn-outline btn-error">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAppointments() {
+            const dateFilter = document.getElementById('filterDate').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const serviceFilter = document.getElementById('filterService').value;
+            
+            let filteredAppointments = clinicData.appointments;
+            
+            if (dateFilter) {
+                filteredAppointments = filteredAppointments.filter(apt => apt.date === dateFilter);
+            }
+            
+            if (statusFilter) {
+                filteredAppointments = filteredAppointments.filter(apt => apt.status === statusFilter);
+            }
+            
+            if (serviceFilter) {
+                filteredAppointments = filteredAppointments.filter(apt => apt.serviceType === serviceFilter);
+            }
+            
+            // Update table with filtered results
+            const tbody = document.getElementById('appointmentsTableBody');
+            const serviceTypeText = {
+                'examination': 'حجز كشف',
+                'consultation': 'استشارة طبية',
+                'online': 'استشارة أونلاين'
+            };
+            
+            const paymentMethodText = {
+                'cash': 'نقدي',
+                'instapay': 'إنستاباي'
+            };
+            
+            tbody.innerHTML = filteredAppointments.map(apt => `
+                <tr class="appointment-row">
+                    <td class="font-semibold">${apt.patientName}</td>
+                    <td>${apt.patientPhone}</td>
+                    <td>${apt.date}</td>
+                    <td>${apt.time}</td>
+                    <td>${serviceTypeText[apt.serviceType]}</td>
+                    <td>${paymentMethodText[apt.paymentMethod]}</td>
+                    <td><span class="status-${apt.status}">${apt.status === 'confirmed' ? 'مؤكد' : apt.status === 'cancelled' ? 'ملغي' : 'في الانتظار'}</span></td>
+                    <td>
+                        <div class="flex gap-2">
+                            ${apt.status !== 'cancelled' ? `
+                                <button onclick="cancelAppointment('${apt.id}')" class="btn btn-sm btn-error">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteAppointment('${apt.id}')" class="btn btn-sm btn-outline btn-error">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function cancelAppointment(appointmentId) {
+            if (confirm('هل أنت متأكد من إلغاء هذا الموعد؟')) {
+                const appointment = clinicData.appointments.find(apt => apt.id === appointmentId);
+                if (appointment) {
+                    appointment.status = 'cancelled';
+                    saveToStorage();
+                    loadAppointmentsTable();
+                    loadDashboardStats();
+                    
+                    document.getElementById('appointmentsMessage').innerHTML = 
+                        '<div class="success-message">تم إلغاء الموعد بنجاح</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('appointmentsMessage').innerHTML = '';
+                    }, 3000);
+                }
+            }
+        }
+
+        function deleteAppointment(appointmentId) {
+            if (confirm('هل أنت متأكد من حذف هذا الموعد نهائياً؟')) {
+                clinicData.appointments = clinicData.appointments.filter(apt => apt.id !== appointmentId);
+                saveToStorage();
+                loadAppointmentsTable();
+                loadDashboardStats();
+                
+                document.getElementById('appointmentsMessage').innerHTML = 
+                    '<div class="success-message">تم حذف الموعد بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('appointmentsMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function loadClinicInfoForm() {
+            document.getElementById('clinicName').value = clinicData.clinicInfo.name;
+            document.getElementById('clinicSlogan').value = clinicData.clinicInfo.slogan;
+            document.getElementById('clinicAddress').value = clinicData.clinicInfo.address;
+            document.getElementById('clinicPhone').value = clinicData.clinicInfo.phone;
+            document.getElementById('clinicWhatsapp').value = clinicData.clinicInfo.whatsapp;
+            document.getElementById('clinicHours').value = clinicData.clinicInfo.workingHours;
+        }
+
+        function loadScheduleManagement() {
+            // Load time slots
+            const timeSlotsList = document.getElementById('timeSlotsList');
+            timeSlotsList.innerHTML = clinicData.timeSlots.map(time => `
+                <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                    <span>${time}</span>
+                    <button onclick="removeTimeSlot('${time}')" class="btn btn-sm btn-error">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            // Load blocked dates
+            const blockedDatesList = document.getElementById('blockedDatesList');
+            blockedDatesList.innerHTML = clinicData.blockedDates.map(date => `
+                <div class="flex items-center justify-between p-2 bg-red-50 rounded">
+                    <span>${date}</span>
+                    <button onclick="removeBlockedDate('${date}')" class="btn btn-sm btn-error">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addTimeSlot() {
+            const newTime = document.getElementById('newTimeSlot').value;
+            if (newTime && !clinicData.timeSlots.includes(newTime)) {
+                clinicData.timeSlots.push(newTime);
+                clinicData.timeSlots.sort();
+                saveToStorage();
+                loadScheduleManagement();
+                document.getElementById('newTimeSlot').value = '';
+                
+                document.getElementById('scheduleMessage').innerHTML = 
+                    '<div class="success-message">تم إضافة الوقت بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('scheduleMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function removeTimeSlot(time) {
+            if (confirm('هل أنت متأكد من حذف هذا الوقت؟')) {
+                clinicData.timeSlots = clinicData.timeSlots.filter(t => t !== time);
+                saveToStorage();
+                loadScheduleManagement();
+                
+                document.getElementById('scheduleMessage').innerHTML = 
+                    '<div class="success-message">تم حذف الوقت بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('scheduleMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function addBlockedDate() {
+            const newDate = document.getElementById('newBlockedDate').value;
+            if (newDate && !clinicData.blockedDates.includes(newDate)) {
+                clinicData.blockedDates.push(newDate);
+                clinicData.blockedDates.sort();
+                saveToStorage();
+                loadScheduleManagement();
+                document.getElementById('newBlockedDate').value = '';
+                
+                document.getElementById('scheduleMessage').innerHTML = 
+                    '<div class="success-message">تم إضافة التاريخ المحجوب بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('scheduleMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function removeBlockedDate(date) {
+            if (confirm('هل أنت متأكد من إلغاء حجب هذا التاريخ؟')) {
+                clinicData.blockedDates = clinicData.blockedDates.filter(d => d !== date);
+                saveToStorage();
+                loadScheduleManagement();
+                
+                document.getElementById('scheduleMessage').innerHTML = 
+                    '<div class="success-message">تم إلغاء حجب التاريخ بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('scheduleMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function loadOnlineScheduleManagement() {
+            const tbody = document.getElementById('onlineSlotsTableBody');
+            
+            tbody.innerHTML = clinicData.onlineSlots.map(slot => {
+                const bookedAppointment = clinicData.appointments.find(apt => 
+                    apt.serviceType === 'online' && 
+                    apt.date === slot.date && 
+                    apt.time === slot.time && 
+                    apt.status !== 'cancelled'
+                );
+                
+                return `
+                    <tr>
+                        <td>${slot.date}</td>
+                        <td>${slot.time}</td>
+                        <td>${slot.duration} دقيقة</td>
+                        <td>
+                            <span class="badge ${slot.available ? 'badge-success' : 'badge-error'}">
+                                ${slot.available ? 'متاح' : 'محجوز'}
+                            </span>
+                        </td>
+                        <td>${bookedAppointment ? bookedAppointment.patientName : '-'}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                ${!slot.available ? `
+                                    <button onclick="makeOnlineSlotAvailable(${slot.id})" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                ` : ''}
+                                <button onclick="deleteOnlineSlot(${slot.id})" class="btn btn-sm btn-error">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function makeOnlineSlotAvailable(slotId) {
+            if (confirm('هل أنت متأكد من إتاحة هذا الموعد مرة أخرى؟')) {
+                const slot = clinicData.onlineSlots.find(s => s.id === slotId);
+                if (slot) {
+                    slot.available = true;
+                    
+                    // Cancel related appointment
+                    const appointment = clinicData.appointments.find(apt => 
+                        apt.serviceType === 'online' && 
+                        apt.date === slot.date && 
+                        apt.time === slot.time
+                    );
+                    if (appointment) {
+                        appointment.status = 'cancelled';
+                    }
+                    
+                    saveToStorage();
+                    loadOnlineScheduleManagement();
+                    
+                    document.getElementById('onlineScheduleMessage').innerHTML = 
+                        '<div class="success-message">تم إتاحة الموعد بنجاح</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('onlineScheduleMessage').innerHTML = '';
+                    }, 3000);
+                }
+            }
+        }
+
+        function deleteOnlineSlot(slotId) {
+            if (confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
+                clinicData.onlineSlots = clinicData.onlineSlots.filter(s => s.id !== slotId);
+                saveToStorage();
+                loadOnlineScheduleManagement();
+                
+                document.getElementById('onlineScheduleMessage').innerHTML = 
+                    '<div class="success-message">تم حذف الموعد بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('onlineScheduleMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function loadMedicalContentManagement() {
+            const container = document.getElementById('articlesManagementList');
+            
+            container.innerHTML = clinicData.medicalArticles.map(article => `
+                <div class="card bg-white shadow border">
+                    <figure class="h-32">
+                        <img src="${article.image}" alt="${article.title}" class="w-full h-full object-cover">
+                    </figure>
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-sm">${article.title}</h4>
+                        <p class="text-xs text-gray-600">${article.content.substring(0, 100)}...</p>
+                        <div class="card-actions justify-end mt-2">
+                            <button onclick="editArticle(${article.id})" class="btn btn-xs btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteArticle(${article.id})" class="btn btn-xs btn-error">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editArticle(articleId) {
+            const article = clinicData.medicalArticles.find(a => a.id === articleId);
+            if (article) {
+                document.getElementById('articleTitle').value = article.title;
+                document.getElementById('articleContent').value = article.content;
+                document.getElementById('articleImage').value = article.image;
+                
+                // Change form to edit mode
+                const form = document.getElementById('addArticleForm');
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    updateArticle(articleId);
+                };
+                
+                // Change button text
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-save ml-2"></i>تحديث المقال';
+            }
+        }
+
+        function updateArticle(articleId) {
+            const article = clinicData.medicalArticles.find(a => a.id === articleId);
+            if (article) {
+                article.title = document.getElementById('articleTitle').value;
+                article.content = document.getElementById('articleContent').value;
+                article.image = document.getElementById('articleImage').value || article.image;
+                
+                saveToStorage();
+                loadMedicalContentManagement();
+                loadMedicalKnowledge(); // Refresh public view
+                
+                // Reset form
+                document.getElementById('addArticleForm').reset();
+                document.getElementById('addArticleForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    addNewArticle();
+                };
+                
+                const submitBtn = document.getElementById('addArticleForm').querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-plus ml-2"></i>إضافة المقال';
+                
+                document.getElementById('medicalContentMessage').innerHTML = 
+                    '<div class="success-message">تم تحديث المقال بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('medicalContentMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function deleteArticle(articleId) {
+            if (confirm('هل أنت متأكد من حذف هذا المقال؟')) {
+                clinicData.medicalArticles = clinicData.medicalArticles.filter(a => a.id !== articleId);
+                saveToStorage();
+                loadMedicalContentManagement();
+                loadMedicalKnowledge(); // Refresh public view
+                
+                document.getElementById('medicalContentMessage').innerHTML = 
+                    '<div class="success-message">تم حذف المقال بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('medicalContentMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function addNewArticle() {
+            const title = document.getElementById('articleTitle').value;
+            const content = document.getElementById('articleContent').value;
+            const image = document.getElementById('articleImage').value || 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop';
+            
+            const newArticle = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                image: image
+            };
+            
+            clinicData.medicalArticles.push(newArticle);
+            saveToStorage();
+            loadMedicalContentManagement();
+            loadMedicalKnowledge(); // Refresh public view
+            
+            document.getElementById('addArticleForm').reset();
+            
+            document.getElementById('medicalContentMessage').innerHTML = 
+                '<div class="success-message">تم إضافة المقال بنجاح</div>';
+            
+            setTimeout(() => {
+                document.getElementById('medicalContentMessage').innerHTML = '';
+            }, 3000);
+        }
+
+        function loadPatientQuestions() {
+            const container = document.getElementById('patientQuestionsList');
+            const noQuestionsMsg = document.getElementById('noQuestionsMessage');
+            
+            if (clinicData.patientQuestions.length === 0) {
+                container.innerHTML = '';
+                noQuestionsMsg.classList.remove('hidden');
+                return;
+            }
+            
+            noQuestionsMsg.classList.add('hidden');
+            
+            container.innerHTML = clinicData.patientQuestions.map(question => `
+                <div class="patient-question">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h5 class="font-semibold text-blue-800">${question.patientName}</h5>
+                            <p class="text-sm text-gray-600">${question.timestamp}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            ${!question.response ? `
+                                <button onclick="respondToQuestion(${question.id})" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-reply"></i> رد
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteQuestion(${question.id})" class="btn btn-sm btn-error">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mb-3">${question.question}</p>
+                    ${question.response ? `
+                        <div class="admin-response">
+                            <p class="font-semibold text-blue-800 mb-1">الرد من: ${question.respondedBy}</p>
+                            <p>${question.response}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function respondToQuestion(questionId) {
+            const question = clinicData.patientQuestions.find(q => q.id === questionId);
+            if (question) {
+                const response = prompt('اكتب ردك على السؤال:');
+                if (response && response.trim()) {
+                    question.response = response.trim();
+                    question.respondedBy = currentUser.fullName;
+                    saveToStorage();
+                    loadPatientQuestions();
+                    
+                    document.getElementById('patientQuestionsMessage').innerHTML = 
+                        '<div class="success-message">تم إرسال الرد بنجاح</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('patientQuestionsMessage').innerHTML = '';
+                    }, 3000);
+                }
+            }
+        }
+
+        function deleteQuestion(questionId) {
+            if (confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
+                clinicData.patientQuestions = clinicData.patientQuestions.filter(q => q.id !== questionId);
+                saveToStorage();
+                loadPatientQuestions();
+                
+                document.getElementById('patientQuestionsMessage').innerHTML = 
+                    '<div class="success-message">تم حذف السؤال بنجاح</div>';
+                
+                setTimeout(() => {
+                    document.getElementById('patientQuestionsMessage').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function loadFeesForm() {
+            document.getElementById('examinationFeeInput').value = clinicData.fees.examination;
+            document.getElementById('consultationFeeInput').value = clinicData.fees.consultation;
+            document.getElementById('onlineConsultationFeeInput').value = clinicData.fees.onlineConsultation;
+        }
+
+        function loadPasswordManagement() {
+            const usersList = document.getElementById('usersList');
+            
+            if (currentUser.username === 'admin') {
+                document.getElementById('userManagementCard').style.display = 'block';
+                
+                usersList.innerHTML = clinicData.users.filter(u => u.username !== 'admin').map(user => `
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div>
+                            <span class="font-semibold">${user.fullName}</span>
+                            <span class="text-sm text-gray-600">(${user.username})</span>
+                        </div>
+                        <button onclick="resetUserPassword('${user.username}')" class="btn btn-sm btn-warning">
+                            <i class="fas fa-key"></i> إعادة تعيين
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('userManagementCard').style.display = 'none';
+            }
+        }
+
+        function resetUserPassword(username) {
+            if (confirm(`هل أنت متأكد من إعادة تعيين كلمة مرور المستخدم ${username}؟`)) {
+                const user = clinicData.users.find(u => u.username === username);
+                if (user) {
+                    user.password = 'pass123';
+                    user.passwordChanged = false;
+                    saveToStorage();
+                    
+                    document.getElementById('passwordManagementMessage').innerHTML = 
+                        '<div class="success-message">تم إعادة تعيين كلمة المرور إلى: pass123</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('passwordManagementMessage').innerHTML = '';
+                    }, 5000);
+                }
+            }
+        }
+
+        // Form submissions
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nameValid = validateFullName(document.getElementById('patientName'));
+            const phoneValid = validatePhoneNumber(document.getElementById('patientPhone'));
+            
+            if (!nameValid || !phoneValid) {
+                alert('يرجى تصحيح البيانات المطلوبة');
+                return;
+            }
+            
+            if (!selectedTime) {
+                alert('يرجى اختيار وقت للموعد');
+                return;
+            }
+            
+            if (!selectedPaymentMethod) {
+                alert('يرجى اختيار طريقة الدفع');
+                return;
+            }
+            
+            const appointmentData = {
+                id: generateAppointmentId(),
+                patientName: document.getElementById('patientName').value,
+                patientPhone: document.getElementById('patientPhone').value,
+                serviceType: document.getElementById('serviceType').value,
+                date: document.getElementById('appointmentDate').value,
+                time: selectedTime,
+                paymentMethod: selectedPaymentMethod,
+                status: 'confirmed',
+                bookingDate: new Date().toISOString(),
+                reason: ''
+            };
+            
+            if (isTimeSlotBooked(appointmentData.date, appointmentData.time)) {
+                alert('عذراً، هذا الموعد تم حجزه للتو. يرجى اختيار موعد آخر.');
+                loadAvailableTimes();
+                return;
+            }
+            
+            clinicData.appointments.push(appointmentData);
+            saveToStorage();
+            showWhatsAppModal(appointmentData);
+            
+            setTimeout(() => {
+                document.getElementById('bookingForm').reset();
+                selectedTime = null;
+                selectedPaymentMethod = null;
+                document.getElementById('selectedTimeDisplay').style.display = 'none';
+                
+                document.querySelectorAll('#booking .payment-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                document.getElementById('patientName').classList.remove('input-success', 'input-error');
+                document.getElementById('patientPhone').classList.remove('input-success', 'input-error');
+                
+                loadAvailableTimes();
+            }, 100);
+        });
+
+        document.getElementById('onlineBookingFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nameValid = validateFullName(document.getElementById('onlinePatientName'));
+            const phoneValid = validatePhoneNumber(document.getElementById('onlinePatientPhone'));
+            
+            if (!nameValid || !phoneValid) {
+                alert('يرجى تصحيح البيانات المطلوبة');
+                return;
+            }
+            
+            if (!selectedOnlineTime) {
+                alert('يرجى اختيار موعد للاستشارة');
+                return;
+            }
+            
+            const appointmentData = {
+                id: generateAppointmentId(),
+                patientName: document.getElementById('onlinePatientName').value,
+                patientPhone: document.getElementById('onlinePatientPhone').value,
+                serviceType: 'online',
+                date: selectedOnlineTime.date,
+                time: selectedOnlineTime.time,
+                paymentMethod: 'instapay',
+                status: 'confirmed',
+                bookingDate: new Date().toISOString(),
+                reason: document.getElementById('onlineConsultationReason').value,
+                duration: selectedOnlineTime.duration
+            };
+            
+            const slotIndex = clinicData.onlineSlots.findIndex(s => s.id === selectedOnlineTime.id);
+            if (slotIndex !== -1) {
+                clinicData.onlineSlots[slotIndex].available = false;
+            }
+            
+            clinicData.appointments.push(appointmentData);
+            saveToStorage();
+            showWhatsAppModal(appointmentData);
+            
+            document.getElementById('onlineBookingForm').style.display = 'none';
+            selectedOnlineTime = null;
+            loadOnlineTimeSlots();
+            document.getElementById('onlinePatientName').classList.remove('input-success', 'input-error');
+            document.getElementById('onlinePatientPhone').classList.remove('input-success', 'input-error');
+        });
+
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Admin form submissions
+        document.getElementById('clinicInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clinicData.clinicInfo.name = document.getElementById('clinicName').value;
+            clinicData.clinicInfo.slogan = document.getElementById('clinicSlogan').value;
+            clinicData.clinicInfo.address = document.getElementById('clinicAddress').value;
+            clinicData.clinicInfo.phone = document.getElementById('clinicPhone').value;
+            clinicData.clinicInfo.whatsapp = document.getElementById('clinicWhatsapp').value;
+            clinicData.clinicInfo.workingHours = document.getElementById('clinicHours').value;
+            
+            saveToStorage();
+            
+            // Update UI elements
+            document.getElementById('clinicNameNav').textContent = clinicData.clinicInfo.name;
+            document.getElementById('clinicNameHome').textContent = clinicData.clinicInfo.name;
+            document.getElementById('clinicSlogan').textContent = clinicData.clinicInfo.slogan;
+            document.getElementById('clinicHours').textContent = clinicData.clinicInfo.workingHours;
+            document.getElementById('locationAddress').textContent = clinicData.clinicInfo.address;
+            document.getElementById('locationPhone').textContent = clinicData.clinicInfo.phone;
+            document.getElementById('locationHours').textContent = clinicData.clinicInfo.workingHours;
+            
+            document.getElementById('clinicInfoMessage').innerHTML = 
+                '<div class="success-message">تم حفظ معلومات العيادة بنجاح</div>';
+            
+            setTimeout(() => {
+                document.getElementById('clinicInfoMessage').innerHTML = '';
+            }, 3000);
+        });
+
+        document.getElementById('addOnlineSlotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newSlot = {
+                id: Date.now(),
+                date: document.getElementById('onlineSlotDate').value,
+                time: document.getElementById('onlineSlotTime').value,
+                duration: parseInt(document.getElementById('onlineSlotDuration').value),
+                available: true
+            };
+            
+            clinicData.onlineSlots.push(newSlot);
+            saveToStorage();
+            loadOnlineScheduleManagement();
+            loadOnlineTimeSlots(); // Refresh public view
+            
+            this.reset();
+            
+            document.getElementById('onlineScheduleMessage').innerHTML = 
+                '<div class="success-message">تم إضافة الموعد الأونلاين بنجاح</div>';
+            
+            setTimeout(() => {
+                document.getElementById('onlineScheduleMessage').innerHTML = '';
+            }, 3000);
+        });
+
+        document.getElementById('addArticleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addNewArticle();
+        });
+
+        document.getElementById('feesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clinicData.fees.examination = parseInt(document.getElementById('examinationFeeInput').value);
+            clinicData.fees.consultation = parseInt(document.getElementById('consultationFeeInput').value);
+            clinicData.fees.onlineConsultation = parseInt(document.getElementById('onlineConsultationFeeInput').value);
+            
+            saveToStorage();
+            
+            // Update UI elements
+            document.getElementById('examinationFee').textContent = clinicData.fees.examination + ' جنيه';
+            document.getElementById('consultationFee').textContent = clinicData.fees.consultation + ' جنيه';
+            document.getElementById('onlineConsultationFee').textContent = clinicData.fees.onlineConsultation + ' جنيه';
+            document.getElementById('examFeeOption').textContent = clinicData.fees.examination;
+            document.getElementById('consultFeeOption').textContent = clinicData.fees.consultation;
+            
+            loadDashboardStats(); // Update revenue calculation
+            
+            document.getElementById('feesMessage').innerHTML = 
+                '<div class="success-message">تم حفظ الرسوم بنجاح</div>';
+            
+            setTimeout(() => {
+                document.getElementById('feesMessage').innerHTML = '';
+            }, 3000);
+        });
+
+        document.getElementById('passwordChangeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (currentUser.password !== currentPassword) {
+                document.getElementById('passwordChangeMessage').innerHTML = 
+                    '<div class="error-message">كلمة المرور الحالية غير صحيحة</div>';
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                document.getElementById('passwordChangeMessage').innerHTML = 
+                    '<div class="error-message">كلمة المرور الجديدة وتأكيدها غير متطابقين</div>';
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                document.getElementById('passwordChangeMessage').innerHTML = 
+                    '<div class="error-message">كلمة المرور يجب أن تكون 6 أحرف على الأقل</div>';
+                return;
+            }
+            
+            // Update password
+            currentUser.password = newPassword;
+            currentUser.passwordChanged = true;
+            saveToStorage();
+            
+            document.getElementById('passwordChangeMessage').innerHTML = 
+                '<div class="success-message">تم تغيير كلمة المرور بنجاح</div>';
+            
+            setTimeout(() => {
+                closePasswordChangeModal();
+                forcePasswordChange = false;
+                document.getElementById('passwordChangeForm').reset();
+                document.getElementById('passwordChangeMessage').innerHTML = '';
+            }, 2000);
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+            showSection('home');
+            loadMedicalKnowledge();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').setAttribute('min', today);
+            
+            // Update UI with clinic info
+            document.getElementById('clinicNameNav').textContent = clinicData.clinicInfo.name;
+            document.getElementById('clinicNameHome').textContent = clinicData.clinicInfo.name;
+            document.getElementById('clinicSlogan').textContent = clinicData.clinicInfo.slogan;
+            document.getElementById('clinicHours').textContent = clinicData.clinicInfo.workingHours;
+            document.getElementById('locationAddress').textContent = clinicData.clinicInfo.address;
+            document.getElementById('locationPhone').textContent = clinicData.clinicInfo.phone;
+            document.getElementById('locationHours').textContent = clinicData.clinicInfo.workingHours;
+            document.getElementById('examinationFee').textContent = clinicData.fees.examination + ' جنيه';
+            document.getElementById('consultationFee').textContent = clinicData.fees.consultation + ' جنيه';
+            document.getElementById('onlineConsultationFee').textContent = clinicData.fees.onlineConsultation + ' جنيه';
+            document.getElementById('examFeeOption').textContent = clinicData.fees.examination;
+            document.getElementById('consultFeeOption').textContent = clinicData.fees.consultation;
+        });
+    </script>
+</body>
+</html>
